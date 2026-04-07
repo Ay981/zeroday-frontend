@@ -1,13 +1,12 @@
 import './App.css'
+import { Dashboard } from './components/Dashboard'
 
 function App() {
 
   return (
     <>
-     <h2 className='text-red-300'>bro</h2>
+  <Dashboard/>
 
-
-     
     </>
   )
 }
