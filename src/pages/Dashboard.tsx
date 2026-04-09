@@ -5,6 +5,7 @@ import { useDebounce } from '../hooks/useDebounce';
 import { ReportCard } from '../components/ReportCard';
 import { DashboardFilters } from '../components/DashboardFilters';
 import { Pagination } from '../components/Pagination';
+import { Navbar } from '../components/Navbar';
 
 export const Dashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -38,6 +39,7 @@ export const Dashboard = () => {
 
   return (
     <div className="max-w-6xl mx-auto py-12 px-6">
+      <Navbar />
       <h1 className="text-4xl font-black text-gray-900 mb-6">ZeroDay Feed</h1>
       
       <DashboardFilters 
