@@ -14,16 +14,15 @@ export const login = async (credentials: { email: string; password: string }) =>
 
 export const logout = async () => {
   try {
-    // 1. Tell Laravel to revoke the token
     await apiClient.post('/logout');
   } catch (error) {
-    console.error("Session already expired or server unreachable");
+    if (import.meta.env.DEV) {
+      console.error('Logout API failed:', error);
+    }
+    // Optional: send to monitoring service instead
   } finally {
-    // 2. Clear local storage regardless of server response
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    
-    // 3. Force a hard refresh to clear all React Query caches
     window.location.href = '/login';
   }
 };

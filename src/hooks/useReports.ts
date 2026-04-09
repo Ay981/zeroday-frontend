@@ -16,3 +16,13 @@ export const useReports = (page = 1, search = '', severity = '') => {
     placeholderData: keepPreviousData,
   });
 };
+export const useReport = (slug: string) => {
+  return useQuery<Report>({
+    queryKey: ['report', slug],
+    queryFn: async () => {
+      const response = await apiClient.get(`/reports/${slug}`);
+      return response.data.data;
+    },
+  });
+};
+

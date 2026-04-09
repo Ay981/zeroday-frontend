@@ -6,6 +6,7 @@ import { ReportCard } from '../components/ReportCard';
 import { DashboardFilters } from '../components/DashboardFilters';
 import { Pagination } from '../components/Pagination';
 import { Navbar } from '../components/Navbar';
+import { Link } from 'react-router-dom'; 
 
 export const Dashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -41,14 +42,21 @@ export const Dashboard = () => {
     <div className="max-w-6xl mx-auto py-12 px-6">
       <Navbar />
       <h1 className="text-4xl font-black text-gray-900 mb-6">ZeroDay Feed</h1>
-      
-      <DashboardFilters 
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        severity={severity}
-        onSeverityChange={(val) => updateParams('severity', val)}
-      />
 
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-10">
+        <DashboardFilters 
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          severity={severity}
+          onSeverityChange={(val) => updateParams('severity', val)}
+        />
+        <Link 
+          to="/dashboard/create" 
+          className="inline-flex h-12 items-center justify-center px-6 rounded-xl font-bold text-white bg-gray-600 hover:bg-gray-700 transition text-center whitespace-nowrap"
+        >
+          + Submit Vulnerability
+        </Link>
+      </div>
       {isLoading ? (
         <div className="text-center py-20 font-bold">Synchronizing...</div>
       ) : (

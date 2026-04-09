@@ -19,9 +19,9 @@ export const Login = () => {
       await login({ email, password });
       // Redirect to dashboard after successful login
       navigate('/dashboard');
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Catch 401 (Wrong password) or 422 (Bad email format)
-      setError(err.response?.data?.message || 'Authentication failed');
+      setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Authentication failed');
     } finally {
       setIsLoading(false);
     }

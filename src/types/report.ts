@@ -7,6 +7,7 @@ export interface User {
 export interface Report {
   id: number;
   title: string;
+  slug: string; // Add this
   severity: 'Low' | 'Medium' | 'High' | 'Critical';
   description: string;
   status: string;

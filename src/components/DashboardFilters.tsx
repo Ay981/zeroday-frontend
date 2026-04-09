@@ -6,18 +6,18 @@ interface Props {
 }
 
 export const DashboardFilters = ({ searchTerm, onSearchChange, severity, onSeverityChange }: Props) => (
-  <div className="flex flex-col md:flex-row gap-4 mb-10">
+  <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center w-full">
     <input
       type="text"
       placeholder="Search vulnerabilities..."
       value={searchTerm}
-      className="flex-1 p-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
+      className="flex-1 h-12 px-4 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
       onChange={(e) => onSearchChange(e.target.value)}
     />
 
     <select 
       value={severity}
-      className="p-3 border border-gray-200 rounded-xl bg-white outline-none cursor-pointer"
+      className="h-12 px-4 border border-gray-200 rounded-xl bg-white outline-none cursor-pointer min-w-[170px]"
       onChange={(e) => onSeverityChange(e.target.value)}
     >
       <option value="">All Severities</option>
