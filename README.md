@@ -4,6 +4,8 @@ Frontend application for managing vulnerability reports in the ZeroDay platform.
 
 This frontend depends on a separate backend repository: [zeroday](https://github.com/ay981/zeroday).
 
+Project reference documentation: [DeepWiki](https://deepwiki.com/Ay981/zeroday-frontend/)
+
 ## Overview
 
 This project is built with React + TypeScript and provides a complete report workflow:
@@ -92,3 +94,7 @@ src/
 - Authentication token is read from `localStorage` (`token`) and attached to API requests.
 - API error handling is centralized in `src/api/client.ts` using response interceptors.
 - Form validation is defined in `src/types/schemas.ts` with Zod.
+
+## Reference
+
+- [DeepWiki project documentation](https://deepwiki.com/Ay981/zeroday-frontend/)
