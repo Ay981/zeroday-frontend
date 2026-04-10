@@ -7,6 +7,7 @@ import { DashboardFilters } from '../components/DashboardFilters';
 import { Pagination } from '../components/Pagination';
 import { Navbar } from '../components/Navbar';
 import { Link } from 'react-router-dom'; 
+import { ReportSkeleton } from '../components/Skeleton/ReportSkeleton';
 
 export const Dashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -58,8 +59,10 @@ export const Dashboard = () => {
         </Link>
       </div>
       {isLoading ? (
-        <div className="text-center py-20 font-bold">Synchronizing...</div>
-      ) : (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {[...Array(6)].map((_, i) => <ReportSkeleton key={i} />)}
+  </div>
+) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {data?.data.length === 0 ? (

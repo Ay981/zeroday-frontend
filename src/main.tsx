@@ -4,29 +4,44 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import App from './App.tsx'
 import './index.css'
 import { BrowserRouter } from 'react-router-dom';
+import { Toaster } from "sileo"; 
+import "sileo/styles.css";
 
 
 // 1. Initialize the Engine
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // 1. Stop fetching every time I click the browser tab
       refetchOnWindowFocus: false, 
-      
-      // 2. Consider data "fresh" for 5 minutes
-      // It will only hit the API again after 5 mins or if you manually refresh
       staleTime: 5 * 60 * 1000, 
-      
-      // 3. Keep old data in cache even if it's "stale"
       gcTime: 10 * 60 * 1000,
     },
   },
 });
 
 
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
+      
+      <Toaster
+        position="top-center"
+        theme="dark"
+        options={{
+          fill: "#171717",
+          roundness: 16,
+          styles: {
+            title: "text-white!",
+            description: "text-white/75!",
+            badge: "bg-white/10!",
+            button: "bg-white/10! hover:bg-white/15!",
+            
+          },
+        }}
+      />
+      
+      
       <BrowserRouter>
         <App />
       </BrowserRouter>

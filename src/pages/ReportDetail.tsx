@@ -14,6 +14,7 @@ export const ReportDetail = () => {
   const isOwner = authUser?.id === report?.submitted_by.id;
 
   if (isLoading) return <div className="p-10 text-center">Loading...</div>;
+  if (!report) return <div className="p-10 text-center">Report not found.</div>;
 
   return (
     <div className="max-w-4xl mx-auto py-12 px-6">
@@ -33,7 +34,7 @@ export const ReportDetail = () => {
           </Link>
             
             <button 
-              onClick={() => confirm('Are you sure?') && deleteReport(report!.slug)}
+              onClick={() => confirm('Are you sure?') && deleteReport(report.slug)}
               disabled={isDeleting}
               className="flex items-center space-x-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl font-bold text-sm hover:bg-red-100 transition disabled:opacity-50"
             >
@@ -44,8 +45,8 @@ export const ReportDetail = () => {
       </div>
 
       <div className="bg-white border border-gray-100 p-10 rounded-3xl shadow-sm">
-        <h1 className="text-4xl font-black mb-4">{report?.title}</h1>
-        <p className="text-gray-600 leading-relaxed">{report?.description}</p>
+        <h1 className="text-4xl font-black mb-4">{report.title}</h1>
+        <p className="text-gray-600 leading-relaxed">{report.description}</p>
       </div>
     </div>
   );

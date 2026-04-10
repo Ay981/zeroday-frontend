@@ -3,7 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import { LogOut, Shield, User } from 'lucide-react';
 
 export const Navbar = () => {
-  const { data: user, isLoading } = useAuth();
+  const { data: user } = useAuth();
 
   return (
     <nav className="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center sticky top-0 z-10 shadow-sm">
