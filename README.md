@@ -1,73 +1,94 @@
-# React + TypeScript + Vite
+# ZeroDay Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend application for managing vulnerability reports in the ZeroDay platform.
 
-Currently, two official plugins are available:
+This frontend depends on a separate backend repository: [zeroday](https://github.com/ay981/zeroday).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Overview
 
-## React Compiler
+This project is built with React + TypeScript and provides a complete report workflow:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Authentication (login/register)
+- Dashboard with search, severity filtering, and pagination
+- Create/Edit/Delete vulnerability reports
+- Report ownership checks (only owners can edit their reports)
+- Program selection when submitting reports
+- Profile and reputation/level updates
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React 19
+- TypeScript
+- Vite
+- React Router
+- TanStack Query
+- React Hook Form + Zod
+- Axios
+- Tailwind CSS
+- Sileo (toast notifications)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Prerequisites
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Node.js 20+
+- npm 10+
+- Running backend API from the separate [zeroday](https://github.com/ay981/zeroday) repository at `http://localhost:8000/api`
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Getting Started
+
+### 1) Start backend ([zeroday](https://github.com/ay981/zeroday) repository)
+
+Run the backend project in the separate `zeroday` repository so the API is available at `http://localhost:8000/api`.
+
+### 2) Start frontend (`zeroday-frontend`)
+
+1. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Start development server:
+
+   ```bash
+   npm run dev
+   ```
+
+3. Open the app (default):
+
+   ```
+   http://localhost:5173
+   ```
+
+## Available Scripts
+
+- `npm run dev` — start Vite dev server
+- `npm run build` — type-check and build production bundle
+- `npm run preview` — preview production build locally
+- `npm run lint` — run ESLint
+
+## Main Routes
+
+- `/login` — Login page
+- `/register` — Registration page
+- `/dashboard` — Reports dashboard
+- `/dashboard/create` — Submit a new report
+- `/dashboard/reports/:slug` — Report details
+- `/dashboard/reports/:slug/edit` — Edit report (owner only)
+- `/profile` — User profile
+
+## Project Structure
+
+```text
+src/
+  api/           # Axios client and API config
+  components/    # Reusable UI components
+  hooks/         # Data/mutation hooks (React Query)
+  pages/         # Route-level pages
+  types/         # Shared TypeScript types and schemas
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Notes
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Authentication token is read from `localStorage` (`token`) and attached to API requests.
+- API error handling is centralized in `src/api/client.ts` using response interceptors.
+- Form validation is defined in `src/types/schemas.ts` with Zod.
