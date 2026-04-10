@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../api/auth';
 
 export const Login = () => {
@@ -72,6 +72,13 @@ export const Login = () => {
           >
             {isLoading ? 'Verifying...' : 'Access Terminal'}
           </button>
+            <div className='flex items-center justify-center gap-3'>
+              <p className="text-center text-sm text-gray-500">
+                Don't have an account?{' '} </p>
+                <Link to="/register" className="font-bold text-gray-900 hover:underline inline-flex items-center underline  transition">
+                  Create Identity
+                </Link>
+            </div>
         </form>
       </div>
     </div>

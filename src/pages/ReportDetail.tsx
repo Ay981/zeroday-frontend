@@ -24,10 +24,10 @@ export const ReportDetail = () => {
 
         {/* --- Action Buttons (Only for the Owner) --- */}
         {isOwner && (
-          <div className="flex space-x-3">
+          <div className="flex space-x-3 ">
           <Link 
             to={`/dashboard/reports/${report.slug}/edit`}
-            className="bg-gray-100 text-gray-900 px-4 py-2 rounded-lg font-bold text-xs hover:bg-gray-200 transition"
+            className="bg-gray-100 text-gray-900 px-4 py-2 rounded-lg font-bold text-xs hover:bg-gray-200 transition w-fit flex items-center space-x-1"
           >
             <Edit3 size={16} /> <span>Edit</span>
           </Link>

@@ -9,6 +9,18 @@ export const reportSchema = z.object({
   }),
   description: z.string().min(20, "Please provide a more detailed description"),
 });
-
-// Extract the TypeScript type from the schema
 export type ReportFormData = z.infer<typeof reportSchema>;
+
+
+export const registerSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  password_confirmation: z.string(),
+}).refine((data) => data.password === data.password_confirmation, {
+  message: "Passwords do not match",
+  path: ["password_confirmation"],
+});
+
+export type RegisterFormData = z.infer<typeof registerSchema>;
+// Extract the TypeScript type from the schema

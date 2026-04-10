@@ -12,6 +12,7 @@ export const login = async (credentials: { email: string; password: string }) =>
   return data;
 };
 
+
 export const logout = async () => {
   try {
     await apiClient.post('/logout');
@@ -25,4 +26,14 @@ export const logout = async () => {
     localStorage.removeItem('user');
     window.location.href = '/login';
   }
+};
+
+export const registerUser = async (data: unknown) => {
+  const response = await apiClient.post('/register', data);
+  
+  // Persist the session
+  localStorage.setItem('token', response.data.token);
+  localStorage.setItem('user', JSON.stringify(response.data.user));
+
+  return response.data;
 };
