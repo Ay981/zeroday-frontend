@@ -25,6 +25,8 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/create" element={<CreateReport />} />
         <Route path="/dashboard/reports/:slug" element={<ReportDetail />} /> 
+          {/* this route only if they own the report */}
+  
         <Route path="/dashboard/reports/:slug/edit" element={<EditReport />} />  
         <Route path="/profile" element={<Profile />} />
       </Route>

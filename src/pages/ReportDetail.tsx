@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useReport } from '../hooks/useReports';
 import { useAuth } from '../hooks/useAuth';
 import { useDeleteReport } from '../hooks/useDeleteReport';
-import { Trash2, Edit3, ChevronLeft, CalendarDays, CircleDot, UserRound } from 'lucide-react';
+import { Trash2, Edit3, ChevronLeft, CalendarDays, CircleDot, UserRound, Building2 } from 'lucide-react';
 import { SeverityBadge } from '../components/SeverityBadge';
 
 export const ReportDetail = () => {
@@ -80,7 +80,7 @@ export const ReportDetail = () => {
 
             <h1 className="text-3xl md:text-4xl font-black tracking-tight text-foreground">{report.title}</h1>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-muted-foreground">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-muted-foreground">
               <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
                 <UserRound size={14} className="text-primary" />
                 <span>Submitted by {report.submitted_by.name}</span>
@@ -89,6 +89,13 @@ export const ReportDetail = () => {
               <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
                 <CalendarDays size={14} className="text-primary" />
                 <span>{createdAt}</span>
+              </div>
+
+              <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
+                <Building2 size={14} className="text-primary" />
+                <span>
+                  Target Program: {report.program ? `${report.program.name} (${report.program.multiplier}x)` : 'Not specified'}
+                </span>
               </div>
             </div>
           </header>

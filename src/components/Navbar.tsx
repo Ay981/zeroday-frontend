@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { logout } from '../api/auth';
 import { useAuth } from '../hooks/useAuth';
-import { LogOut, Shield, UserRound } from 'lucide-react';
+import { LogOut, UserRound } from 'lucide-react';
+import appLogo from '../assets/image.png';
 
 export const Navbar = () => {
   const { data: user } = useAuth();
@@ -10,8 +11,8 @@ export const Navbar = () => {
   return (
     <nav className="sticky top-0 z-10 border-b border-border/80 bg-card/95 backdrop-blur px-4 md:px-6 py-3 flex justify-between items-center">
       <Link to="/dashboard" className="flex items-center gap-2.5 text-primary rounded-lg transition-all duration-200 motion-reduce:transition-none hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-          <Shield size={16} strokeWidth={2.5} />
+        <span className="inline-flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-primary text-primary-foreground">
+          <img src={appLogo} alt="ZeroDay logo" className="h-8 w-8 object-contain scale-[1.9]" />
         </span>
         <span className="font-black text-lg tracking-tight text-foreground">ZeroDay</span>
       </Link>

@@ -1,22 +1,60 @@
 import axios from 'axios';
+import { sileo } from 'sileo';
 
-// 1. Create the Instance
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8000/api', // Your Laravel API URL
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  },
-  withCredentials: true, // Required for the CORS 'supports_credentials' we set earlier
+  baseURL: 'http://localhost:8000/api',
 });
 
-// 2. The Request Interceptor (The "Wristband Attacher")
+// Request Interceptor (Existing: Attach Token)
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
+
+// Response Interceptor (New: The Safety Net)
+apiClient.interceptors.response.use(
+  (response) => response, // If request is 2xx, do nothing
+  (error) => {
+    const status = error.response?.status;
+
+    switch (status) {
+      case 401: // Unauthorized (Token expired/invalid)
+        localStorage.removeItem('token');
+        sileo.error({
+          title: 'Session Terminated',
+          description: 'Re-authentication required.',
+        });
+        // Optional: window.location.href = '/login';
+        break;
+
+      case 403: // Forbidden (Policy failed)
+        sileo.error({
+          title: 'Access Denied',
+          description: 'You do not have clearance for this operation.',
+        });
+        break;
+
+      case 422: // Validation Error
+        // We usually handle this inside the component/form
+        break;
+
+      case 500: // Server Crash
+        sileo.error({
+          title: 'Nexus Offline',
+          description: 'The backend server encountered a critical error.',
+        });
+        break;
+
+      default:
+        sileo.error({
+          title: 'Network Error',
+          description: 'Unable to establish uplink with the server.',
+        });
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export default apiClient;

@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { ReportFormData } from '../types/schemas';
 import { reportSchema } from '../types/schemas';
+import { usePrograms } from '../hooks/usePrograms';
 
 import type { Report } from '../types/report';
 
@@ -13,12 +14,15 @@ interface Props {
 }
 
 export const ReportForm = ({ initialData, onSubmit, isLoading, buttonText }: Props) => {
+  const { data: programs, isLoading: loadingPrograms } = usePrograms();
+
   const { register, handleSubmit, formState: { errors } } = useForm<ReportFormData>({
     resolver: zodResolver(reportSchema),
     defaultValues: initialData ? {
       title: initialData.title,
       severity: initialData.severity,
       description: initialData.description,
+      program_id: initialData.program ? String(initialData.program.id) : '',
     } : {},
   });
 
@@ -46,6 +50,23 @@ export const ReportForm = ({ initialData, onSubmit, isLoading, buttonText }: Pro
           <option value="Critical">Critical</option>
         </select>
         {errors.severity && <p className="mt-1 text-xs font-semibold text-destructive">{errors.severity.message}</p>}
+      </div>
+
+      <div>
+        <label className="mb-2 ml-1 block text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground">Target Program</label>
+        <select
+          {...register('program_id')}
+          disabled={loadingPrograms}
+          className={`w-full rounded-lg border bg-background px-4 py-3 text-foreground outline-none transition-all duration-200 motion-reduce:transition-none ${errors.program_id ? 'border-destructive/60 focus-visible:ring-destructive/50' : 'border-border hover:border-primary/40'} focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-60`}
+        >
+          <option value="">{loadingPrograms ? 'Loading programs...' : 'Select a company...'}</option>
+          {programs?.map((program) => (
+            <option key={program.id} value={program.id}>
+              {program.name} ({program.multiplier}x Multiplier)
+            </option>
+          ))}
+        </select>
+        {errors.program_id && <p className="mt-1 text-xs font-semibold text-destructive">{errors.program_id.message}</p>}
       </div>
 
       <div>

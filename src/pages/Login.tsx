@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../api/auth';
 import { sileo } from "sileo";
-import { Shield, Key, AlertCircle } from 'lucide-react';
+import { Key, AlertCircle } from 'lucide-react';
+import appLogo from '../assets/image.png';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
@@ -45,8 +46,8 @@ export const Login = () => {
     <div className="min-h-screen bg-background text-foreground px-4 py-8 md:py-14 flex items-center justify-center">
       <div className="max-w-md w-full space-y-8 rounded-2xl border border-border bg-card p-8 md:p-10">
         <div className="text-center">
-          <div className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <Shield size={28} strokeWidth={2.5} />
+          <div className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl bg-primary text-primary-foreground">
+            <img src={appLogo} alt="ZeroDay logo" className="h-12 w-12 object-contain scale-[1.8]" />
           </div>
           <h2 className="text-3xl font-black tracking-tight">ZeroDay Login</h2>
           <p className="mt-2 text-sm text-muted-foreground">

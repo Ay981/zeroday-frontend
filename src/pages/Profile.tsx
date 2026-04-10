@@ -1,7 +1,8 @@
 import { useUserStats } from '../hooks/useUserStats';
 import { useAuth } from '../hooks/useAuth';
-import { ShieldAlert, Bug, Flame, ArrowUpRight, Fingerprint, Mail, Sparkles } from 'lucide-react';
+import { ShieldAlert, Bug, Flame, ArrowUpRight, Fingerprint, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import appLogo from '../assets/image.png';
 
 type RecentActivityItem = {
     id: string | number;
@@ -40,12 +41,15 @@ export const Profile = () => {
                             <div className="relative h-18 w-18 md:h-20 md:w-20 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center text-3xl font-black shadow-sm">
                                 {displayName.charAt(0).toUpperCase()}
                                 <span className="absolute -bottom-1 -right-1 rounded-full border border-border bg-card p-1.5 text-primary">
-                                    <Sparkles size={14} />
+                                    <img src={appLogo} alt="ZeroDay logo" className="h-4.5 w-4.5 object-contain scale-[1.6]" />
                                 </span>
                             </div>
 
                             <div>
-                                <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground font-bold mb-2">Operator Profile</p>
+                                <div className="mb-2 flex items-center gap-2">
+                                    <img src={appLogo} alt="ZeroDay logo" className="h-5 w-5 object-contain scale-[1.5]" />
+                                    <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground font-bold">Operator Profile</p>
+                                </div>
                                 <h1 className="text-3xl md:text-4xl font-black tracking-tight">{displayName}</h1>
                                 
                                 <div className="mt-4 flex items-center gap-3">

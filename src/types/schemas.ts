@@ -2,15 +2,6 @@ import { z } from 'zod';
 
 const severityOptions = ['Low', 'Medium', 'High', 'Critical'] as const;
 
-export const reportSchema = z.object({
-  title: z.string().min(10, "Title must be at least 10 characters"),
-  severity: z.enum(severityOptions, {
-    message: "Please select a valid severity level",
-  }),
-  description: z.string().min(20, "Please provide a more detailed description"),
-});
-export type ReportFormData = z.infer<typeof reportSchema>;
-
 
 export const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -24,3 +15,12 @@ export const registerSchema = z.object({
 
 export type RegisterFormData = z.infer<typeof registerSchema>;
 // Extract the TypeScript type from the schema
+export const reportSchema = z.object({
+  title: z.string().min(10),
+  severity: z.enum(severityOptions, {
+    message: "Please select a valid severity level",
+  }),
+  description: z.string().min(20),
+  program_id: z.string().min(1, "Please select a target program"), // Add this
+});
+export type ReportFormData = z.infer<typeof reportSchema>;

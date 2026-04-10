@@ -9,6 +9,7 @@ import { Navbar } from '../components/Navbar';
 import { Link } from 'react-router-dom'; 
 import { ReportSkeleton } from '../components/Skeleton/ReportSkeleton';
 import { AlertTriangle, Bug, ShieldCheck } from 'lucide-react';
+import appLogo from '../assets/image.png';
 
 export const Dashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -60,7 +61,12 @@ export const Dashboard = () => {
       <div className="mt-8 mb-6 md:mb-8 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-black mb-2">Threat Intelligence</p>
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-foreground">ZeroDay Feed</h1>
+          <div className="flex items-center gap-3">
+            <span className="inline-flex h-8 w-8 md:h-9 md:w-9 items-center justify-center overflow-hidden">
+              <img src={appLogo} alt="ZeroDay logo" className="h-8 w-8 md:h-9 md:w-9 object-contain scale-[1.7]" />
+            </span>
+            <h1 className="text-3xl md:text-4xl font-black tracking-tight text-foreground">ZeroDay Feed</h1>
+          </div>
         </div>
 
         <Link
