@@ -12,18 +12,42 @@ export const EditReport = () => {
   // 2. Setup the update mutation
   const { mutate, isPending: isUpdating } = useUpdateReport(slug!);
 
-  if (isFetching) return <div className="p-10 text-center font-bold">Loading Report Data...</div>;
+  if (isFetching) {
+    return (
+      <div className="min-h-screen bg-background text-foreground px-4 md:px-8 py-10 md:py-14">
+        <div className="max-w-3xl mx-auto rounded-xl border border-border bg-card p-10 text-center font-semibold text-muted-foreground">
+          Loading report data...
+        </div>
+      </div>
+    );
+  }
+
+  if (!report) {
+    return (
+      <div className="min-h-screen bg-background text-foreground px-4 md:px-8 py-10 md:py-14">
+        <div className="max-w-3xl mx-auto rounded-xl border border-border bg-card p-10 text-center font-semibold text-muted-foreground">
+          Report not found.
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-2xl mx-auto py-12 px-6">
-      <h1 className="text-3xl font-black text-gray-900 mb-8">Edit Vulnerability</h1>
-      
-      <ReportForm 
-        initialData={report} 
-        onSubmit={(data) => mutate(data)} 
-        isLoading={isUpdating}
-        buttonText="Update Report"
-      />
+    <div className="min-h-screen bg-background text-foreground px-4 md:px-8 py-10 md:py-14">
+      <div className="max-w-3xl mx-auto space-y-6">
+        <header className="space-y-2">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-black">Maintenance</p>
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight">Edit Vulnerability</h1>
+          <p className="text-sm text-muted-foreground">Update the report details and keep the timeline accurate.</p>
+        </header>
+
+        <ReportForm
+          initialData={report}
+          onSubmit={(data) => mutate(data)}
+          isLoading={isUpdating}
+          buttonText="Update Report"
+        />
+      </div>
     </div>
   );
 };

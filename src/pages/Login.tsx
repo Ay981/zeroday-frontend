@@ -36,29 +36,26 @@ export const Login = () => {
       await loginPromise;
       // Slight delay (800ms) so user can see the "Success" toast before redirect
       setTimeout(() => navigate('/dashboard'), 800);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Authentication failed');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Authentication failed');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-3xl shadow-sm border border-gray-100">
-        
-        {/* Header Section */}
+    <div className="min-h-screen bg-background text-foreground px-4 py-8 md:py-14 flex items-center justify-center">
+      <div className="max-w-md w-full space-y-8 rounded-2xl border border-border bg-card p-8 md:p-10">
         <div className="text-center">
-          <div className="flex justify-center mb-4 text-blue-600">
-            <Shield size={42} strokeWidth={2.5} />
+          <div className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <Shield size={28} strokeWidth={2.5} />
           </div>
-          <h2 className="text-3xl font-black text-gray-900 tracking-tight">ZeroDay Login</h2>
-          <p className="mt-2 text-sm text-gray-500 font-medium">
+          <h2 className="text-3xl font-black tracking-tight">ZeroDay Login</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
             Enter your researcher credentials to access the feed.
           </p>
         </div>
 
-        {/* Local Error Feedback */}
         {error && (
-          <div className="flex items-center gap-2 bg-red-50 text-red-600 p-4 rounded-xl text-sm font-bold border border-red-100">
+          <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3.5 text-sm font-bold text-destructive">
             <AlertCircle size={18} />
             <span>{error}</span>
           </div>
@@ -67,11 +64,11 @@ export const Login = () => {
         <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1 ml-1">Email Address</label>
+              <label className="mb-1 ml-1 block text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Email Address</label>
               <input
                 type="email"
                 required
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground outline-none transition-all duration-200 motion-reduce:transition-none hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 placeholder="hacker@zeroday.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -79,11 +76,11 @@ export const Login = () => {
             </div>
 
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1 ml-1">Terminal Password</label>
+              <label className="mb-1 ml-1 block text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Terminal Password</label>
               <input
                 type="password"
                 required
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground outline-none transition-all duration-200 motion-reduce:transition-none hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -93,17 +90,17 @@ export const Login = () => {
 
           <button
             type="submit"
-            className="w-full flex justify-center items-center gap-2 py-4 bg-gray-900 text-white rounded-2xl font-black hover:bg-black transition-all active:scale-[0.98]"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3.5 font-black text-primary-foreground transition-all duration-200 motion-reduce:transition-none hover:opacity-90 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <Key size={18} />
             <span>Initialize Session</span>
           </button>
 
           <div className="flex items-center justify-center gap-2 pt-4">
-            <p className="text-sm text-gray-400 font-medium">New researcher?</p>
+            <p className="text-sm text-muted-foreground font-medium">New researcher?</p>
             <Link 
               to="/register" 
-              className="text-sm font-black text-gray-600 hover:text-gray-900 underline underline-offset-4"
+              className="text-sm font-black text-primary hover:opacity-80 underline underline-offset-4"
             >
               Create Identity
             </Link>

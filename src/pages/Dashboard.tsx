@@ -8,6 +8,7 @@ import { Pagination } from '../components/Pagination';
 import { Navbar } from '../components/Navbar';
 import { Link } from 'react-router-dom'; 
 import { ReportSkeleton } from '../components/Skeleton/ReportSkeleton';
+import { AlertTriangle, Bug, ShieldCheck } from 'lucide-react';
 
 export const Dashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -37,36 +38,83 @@ export const Dashboard = () => {
     if (debouncedSearch !== urlSearch) updateParams('search', debouncedSearch);
   }, [debouncedSearch]);
 
-  if (error) return <div className="p-8 text-red-500 text-center font-bold">API Error: {error.message}</div>;
+  const reports = data?.data ?? [];
+  const criticalOnPage = reports.filter((report) => report.severity === 'Critical').length;
+  const openOnPage = reports.filter((report) => report.status.toLowerCase().includes('open')).length;
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background text-foreground px-6 py-10">
+        <div className="max-w-6xl mx-auto rounded-xl border border-destructive/30 bg-destructive/10 p-8 text-center font-bold text-destructive shadow-sm">
+          API Error: {error.message}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-6xl mx-auto py-12 px-6">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="max-w-6xl mx-auto py-8 md:py-12 px-4 md:px-6">
       <Navbar />
-      <h1 className="text-4xl font-black text-gray-900 mb-6">ZeroDay Feed</h1>
 
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-10">
+      <div className="mt-8 mb-6 md:mb-8 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+        <div>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-black mb-2">Threat Intelligence</p>
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-foreground">ZeroDay Feed</h1>
+        </div>
+
+        <Link
+          to="/dashboard/create"
+          className="inline-flex h-11 items-center justify-center px-5 rounded-lg font-bold text-primary-foreground bg-primary hover:opacity-90 transition-all duration-200 motion-reduce:transition-none active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background text-center whitespace-nowrap"
+        >
+          + Submit Vulnerability
+        </Link>
+      </div>
+
+      {!isLoading && (
+        <div className="mb-8 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="rounded-xl border border-border bg-card px-4 py-3 transition-colors hover:border-primary/40">
+            <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground font-black mb-1">Total Results</p>
+            <p className="text-2xl font-black text-foreground inline-flex items-center gap-2">
+              <Bug size={18} className="text-primary" />
+              {data?.meta.total ?? 0}
+            </p>
+          </div>
+          <div className="rounded-xl border border-border bg-card px-4 py-3 transition-colors hover:border-destructive/40">
+            <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground font-black mb-1">Critical (This Page)</p>
+            <p className="text-2xl font-black text-destructive inline-flex items-center gap-2">
+              <AlertTriangle size={18} />
+              {criticalOnPage}
+            </p>
+          </div>
+          <div className="rounded-xl border border-border bg-card px-4 py-3 transition-colors hover:border-primary/40">
+            <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground font-black mb-1">Open Status</p>
+            <p className="text-2xl font-black text-foreground inline-flex items-center gap-2">
+              <ShieldCheck size={18} className="text-primary" />
+              {openOnPage}
+            </p>
+          </div>
+        </div>
+      )}
+
+      <div className="rounded-xl border border-border bg-card p-4 md:p-5 mb-8">
         <DashboardFilters 
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
           severity={severity}
           onSeverityChange={(val) => updateParams('severity', val)}
         />
-        <Link 
-          to="/dashboard/create" 
-          className="inline-flex h-12 items-center justify-center px-6 rounded-xl font-bold text-white bg-gray-600 hover:bg-gray-700 transition text-center whitespace-nowrap"
-        >
-          + Submit Vulnerability
-        </Link>
       </div>
-      {isLoading ? (
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    {[...Array(6)].map((_, i) => <ReportSkeleton key={i} />)}
-  </div>
-) : (
+
+        {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => <ReportSkeleton key={i} />)}
+        </div>
+      ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {data?.data.length === 0 ? (
-               <p className="col-span-full text-center py-10 text-gray-500 font-bold">No results found.</p>
+              <p className="col-span-full text-center py-10 text-muted-foreground font-bold">No results found.</p>
             ) : (
               data?.data.map((report) => <ReportCard key={report.id} report={report} />)
             )}
@@ -80,6 +128,7 @@ export const Dashboard = () => {
           />
         </>
       )}
+      </div>
     </div>
   );
 };

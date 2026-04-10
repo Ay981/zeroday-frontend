@@ -1,52 +1,103 @@
 import { useParams, Link } from 'react-router-dom';
 import { useReport } from '../hooks/useReports';
-import { useAuth } from '../hooks/useAuth'; // Our identity hook
+import { useAuth } from '../hooks/useAuth';
 import { useDeleteReport } from '../hooks/useDeleteReport';
-import { Trash2, Edit3, ChevronLeft } from 'lucide-react';
+import { Trash2, Edit3, ChevronLeft, CalendarDays, CircleDot, UserRound } from 'lucide-react';
+import { SeverityBadge } from '../components/SeverityBadge';
 
 export const ReportDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: report, isLoading } = useReport(slug!);
-  const { data: authUser } = useAuth(); // Get current hacker
+  const { data: authUser } = useAuth();
   const { mutate: deleteReport, isPending: isDeleting } = useDeleteReport();
 
-  // THE OWNERSHIP CHECK (Client-side Authorization)
   const isOwner = authUser?.id === report?.submitted_by.id;
+  const createdAt = report ? new Date(report.created_at).toLocaleString() : '';
 
-  if (isLoading) return <div className="p-10 text-center">Loading...</div>;
-  if (!report) return <div className="p-10 text-center">Report not found.</div>;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background text-foreground px-4 md:px-8 py-12">
+        <div className="max-w-5xl mx-auto rounded-xl border border-border bg-card p-10 text-center text-muted-foreground font-semibold">
+          Loading report details...
+        </div>
+      </div>
+    );
+  }
+
+  if (!report) {
+    return (
+      <div className="min-h-screen bg-background text-foreground px-4 md:px-8 py-12">
+        <div className="max-w-5xl mx-auto rounded-xl border border-border bg-card p-10 text-center text-muted-foreground font-semibold">
+          Report not found.
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-6">
-      <div className="flex justify-between items-center mb-8">
-        <Link to="/dashboard" className="flex items-center text-gray-400 hover:text-black transition">
-          <ChevronLeft size={20} /> <span className="font-bold text-sm">Back</span>
-        </Link>
-
-        {/* --- Action Buttons (Only for the Owner) --- */}
-        {isOwner && (
-          <div className="flex space-x-3 ">
-          <Link 
-            to={`/dashboard/reports/${report.slug}/edit`}
-            className="bg-gray-100 text-gray-900 px-4 py-2 rounded-lg font-bold text-xs hover:bg-gray-200 transition w-fit flex items-center space-x-1"
+    <div className="min-h-screen bg-background text-foreground px-4 md:px-8 py-10 md:py-14">
+      <div className="max-w-5xl mx-auto space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <Link
+            to="/dashboard"
+            className="inline-flex w-fit items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-bold text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors"
           >
-            <Edit3 size={16} /> <span>Edit</span>
+            <ChevronLeft size={16} />
+            Back to Dashboard
           </Link>
-            
-            <button 
-              onClick={() => confirm('Are you sure?') && deleteReport(report.slug)}
-              disabled={isDeleting}
-              className="flex items-center space-x-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl font-bold text-sm hover:bg-red-100 transition disabled:opacity-50"
-            >
-              <Trash2 size={16} /> <span>{isDeleting ? 'Deleting...' : 'Delete'}</span>
-            </button>
-          </div>
-        )}
-      </div>
 
-      <div className="bg-white border border-gray-100 p-10 rounded-3xl shadow-sm">
-        <h1 className="text-4xl font-black mb-4">{report.title}</h1>
-        <p className="text-gray-600 leading-relaxed">{report.description}</p>
+          {isOwner && (
+            <div className="flex items-center gap-2">
+              <Link
+                to={`/dashboard/reports/${report.slug}/edit`}
+                className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-xs font-bold uppercase tracking-wide text-foreground hover:border-primary/50 hover:text-primary transition-colors"
+              >
+                <Edit3 size={14} />
+                Edit
+              </Link>
+
+              <button
+                onClick={() => confirm('Are you sure?') && deleteReport(report.slug)}
+                disabled={isDeleting}
+                className="inline-flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-2 text-xs font-bold uppercase tracking-wide text-destructive hover:bg-destructive/15 transition-colors disabled:opacity-50"
+              >
+                <Trash2 size={14} />
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          )}
+        </div>
+
+        <article className="rounded-2xl border border-border bg-card p-6 md:p-8 space-y-6">
+          <header className="space-y-4 border-b border-border pb-6">
+            <div className="flex flex-wrap items-center gap-3">
+              <SeverityBadge severity={report.severity} />
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                <CircleDot size={12} />
+                {report.status}
+              </span>
+            </div>
+
+            <h1 className="text-3xl md:text-4xl font-black tracking-tight text-foreground">{report.title}</h1>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-muted-foreground">
+              <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
+                <UserRound size={14} className="text-primary" />
+                <span>Submitted by {report.submitted_by.name}</span>
+              </div>
+
+              <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
+                <CalendarDays size={14} className="text-primary" />
+                <span>{createdAt}</span>
+              </div>
+            </div>
+          </header>
+
+          <section>
+            <h2 className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-black mb-3">Description</h2>
+            <p className="text-foreground/90 leading-relaxed whitespace-pre-line">{report.description}</p>
+          </section>
+        </article>
       </div>
     </div>
   );

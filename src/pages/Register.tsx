@@ -36,83 +36,74 @@ export const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-3xl shadow-sm border border-gray-100">
-        
-        {/* Header */}
+    <div className="min-h-screen bg-background text-foreground px-4 py-8 md:py-14 flex items-center justify-center">
+      <div className="max-w-md w-full space-y-8 rounded-2xl border border-border bg-card p-8 md:p-10">
         <div className="text-center">
-          <div className="flex justify-center mb-4 text-blue-600">
-            <Shield size={40} strokeWidth={2.5} />
+          <div className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <Shield size={28} strokeWidth={2.5} />
           </div>
-          <h2 className="text-3xl font-black text-gray-900 tracking-tight">Create Identity</h2>
-          <p className="mt-2 text-sm text-gray-500 font-medium">
+          <h2 className="text-3xl font-black tracking-tight">Create Identity</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
             Join the ZeroDay network to begin reporting.
           </p>
         </div>
 
-        {/* Server-side Error Alert */}
         {serverError && (
-          <div className="flex items-center gap-2 bg-red-50 text-red-600 p-4 rounded-xl text-sm font-bold border border-red-100 animate-shake">
+          <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3.5 text-sm font-bold text-destructive">
             <AlertCircle size={18} />
             <span>{serverError}</span>
           </div>
         )}
 
         <form className="mt-8 space-y-5" onSubmit={handleSubmit(onSubmit)}>
-          
-          {/* Name Field */}
           <div>
-            <label className="block text-xs font-black uppercase tracking-wider text-gray-400 mb-1 ml-1">Full Name</label>
+            <label className="mb-1 ml-1 block text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Full Name</label>
             <input
               {...register('name')}
               type="text"
               placeholder="e.g. John Doe"
-              className={`w-full px-4 py-3 rounded-xl border outline-none transition ${errors.name ? 'border-red-500' : 'border-gray-200 focus:ring-2 focus:ring-blue-500'}`}
+              className={`w-full rounded-lg border bg-background px-4 py-3 text-foreground outline-none transition-all duration-200 motion-reduce:transition-none ${errors.name ? 'border-destructive/60 focus-visible:ring-destructive/50' : 'border-border hover:border-primary/40'} focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background`}
             />
-            {errors.name && <p className="mt-1 text-xs text-red-500 font-bold">{errors.name.message}</p>}
+            {errors.name && <p className="mt-1 text-xs font-semibold text-destructive">{errors.name.message}</p>}
           </div>
 
-          {/* Email Field */}
           <div>
-            <label className="block text-xs font-black uppercase tracking-wider text-gray-400 mb-1 ml-1">Email Address</label>
+            <label className="mb-1 ml-1 block text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Email Address</label>
             <input
               {...register('email')}
               type="email"
               placeholder="hacker@zeroday.com"
-              className={`w-full px-4 py-3 rounded-xl border outline-none transition ${errors.email ? 'border-red-500' : 'border-gray-200 focus:ring-2 focus:ring-blue-500'}`}
+              className={`w-full rounded-lg border bg-background px-4 py-3 text-foreground outline-none transition-all duration-200 motion-reduce:transition-none ${errors.email ? 'border-destructive/60 focus-visible:ring-destructive/50' : 'border-border hover:border-primary/40'} focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background`}
             />
-            {errors.email && <p className="mt-1 text-xs text-red-500 font-bold">{errors.email.message}</p>}
+            {errors.email && <p className="mt-1 text-xs font-semibold text-destructive">{errors.email.message}</p>}
           </div>
 
-          {/* Password Field */}
           <div>
-            <label className="block text-xs font-black uppercase tracking-wider text-gray-400 mb-1 ml-1">Terminal Password</label>
+            <label className="mb-1 ml-1 block text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Terminal Password</label>
             <input
               {...register('password')}
               type="password"
               placeholder="••••••••"
-              className={`w-full px-4 py-3 rounded-xl border outline-none transition ${errors.password ? 'border-red-500' : 'border-gray-200 focus:ring-2 focus:ring-blue-500'}`}
+              className={`w-full rounded-lg border bg-background px-4 py-3 text-foreground outline-none transition-all duration-200 motion-reduce:transition-none ${errors.password ? 'border-destructive/60 focus-visible:ring-destructive/50' : 'border-border hover:border-primary/40'} focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background`}
             />
-            {errors.password && <p className="mt-1 text-xs text-red-500 font-bold">{errors.password.message}</p>}
+            {errors.password && <p className="mt-1 text-xs font-semibold text-destructive">{errors.password.message}</p>}
           </div>
 
-          {/* Confirm Password Field */}
           <div>
-            <label className="block text-xs font-black uppercase tracking-wider text-gray-400 mb-1 ml-1">Confirm Password</label>
+            <label className="mb-1 ml-1 block text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Confirm Password</label>
             <input
               {...register('password_confirmation')}
               type="password"
               placeholder="••••••••"
-              className={`w-full px-4 py-3 rounded-xl border outline-none transition ${errors.password_confirmation ? 'border-red-500' : 'border-gray-200 focus:ring-2 focus:ring-blue-500'}`}
+              className={`w-full rounded-lg border bg-background px-4 py-3 text-foreground outline-none transition-all duration-200 motion-reduce:transition-none ${errors.password_confirmation ? 'border-destructive/60 focus-visible:ring-destructive/50' : 'border-border hover:border-primary/40'} focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background`}
             />
-            {errors.password_confirmation && <p className="mt-1 text-xs text-red-500 font-bold">{errors.password_confirmation.message}</p>}
+            {errors.password_confirmation && <p className="mt-1 text-xs font-semibold text-destructive">{errors.password_confirmation.message}</p>}
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full flex justify-center items-center gap-2 py-4 bg-gray-900 text-white rounded-2xl font-black hover:bg-black transition-all active:scale-[0.98] disabled:opacity-50"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3.5 font-black text-primary-foreground transition-all duration-200 motion-reduce:transition-none hover:opacity-90 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             {isLoading ? 'Encrypting Identity...' : (
               <>
@@ -123,10 +114,9 @@ export const Register = () => {
           </button>
         </form>
 
-        {/* Footer Link */}
-        <p className="text-center text-sm font-bold text-gray-400">
+        <p className="text-center text-sm font-bold text-muted-foreground">
           Existing researcher? {' '}
-          <Link to="/login" className="text-blue-600 hover:underline">
+          <Link to="/login" className="text-primary hover:underline">
             Login to Terminal
           </Link>
         </p>

@@ -21,8 +21,15 @@ export const useCreateReport = () => {
 
       return (await response).data;
     },
+    // src/hooks/useCreateReport.ts
     onSuccess: () => {
+      // Invalidate the reports feed
       queryClient.invalidateQueries({ queryKey: ['reports'] });
+      
+      // CRITICAL: Invalidate the user so the reputation/level updates instantly
+      queryClient.invalidateQueries({ queryKey: ['auth-user'] });
+      
+      sileo.success({ title: "Points Awarded", description: "Reputation updated." });
       navigate('/dashboard');
     },
   });

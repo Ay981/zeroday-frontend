@@ -11,13 +11,13 @@ export const DashboardFilters = ({ searchTerm, onSearchChange, severity, onSever
       type="text"
       placeholder="Search vulnerabilities..."
       value={searchTerm}
-      className="flex-1 h-12 px-4 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
+      className="flex-1 h-11 px-4 border border-border bg-background text-foreground rounded-lg outline-none transition-all duration-200 motion-reduce:transition-none hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background placeholder:text-muted-foreground"
       onChange={(e) => onSearchChange(e.target.value)}
     />
 
     <select 
       value={severity}
-      className="h-12 px-4 border border-gray-200 rounded-xl bg-white outline-none cursor-pointer min-w-[170px]"
+      className="h-11 px-4 border border-border bg-background text-foreground rounded-lg outline-none cursor-pointer min-w-[170px] transition-all duration-200 motion-reduce:transition-none hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       onChange={(e) => onSeverityChange(e.target.value)}
     >
       <option value="">All Severities</option>
