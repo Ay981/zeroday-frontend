@@ -2,7 +2,7 @@ import axios from 'axios';
 import { sileo } from 'sileo';
 
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8000/api',
+  baseURL: 'http://localhost:8000/api/v1', // Adjust if your backend is hosted elsewhere
 });
 
 // Request Interceptor (Existing: Attach Token)
@@ -45,6 +45,12 @@ apiClient.interceptors.response.use(
           description: 'The backend server encountered a critical error.',
         });
         break;
+      case 429: // Too Many Requests
+  sileo.error({
+    title: "Security Lockout",
+    description: "Too many failed attempts. Try again in 60 seconds."
+  });
+  break;
 
       default:
         sileo.error({

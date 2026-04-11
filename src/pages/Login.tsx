@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../api/auth';
 import { sileo } from "sileo";
-import { Key, AlertCircle } from 'lucide-react';
+import { Key, CircleAlert } from 'lucide-react';
 import appLogo from '../assets/image.png';
 
 export const Login = () => {
@@ -55,12 +55,23 @@ export const Login = () => {
           </p>
         </div>
 
-        {error && (
-          <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3.5 text-sm font-bold text-destructive">
-            <AlertCircle size={18} />
-            <span>{error}</span>
-          </div>
-        )}
+        {error && (() => {
+          const friendlyError =
+            /invalid|unauthorized|401|credential|password|email/i.test(error)
+              ? "That email or password doesn’t look right. Please try again."
+              : /network|fetch|timeout|offline|internet/i.test(error)
+              ? "We couldn’t reach the server. Please check your connection and try again."
+              : /too many|rate limit|429/i.test(error)
+              ? "Too many attempts. Please wait a moment before trying again."
+              : "Something went wrong while signing you in. Please try again.";
+
+          return (
+            <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3.5 text-sm font-bold text-destructive">
+              <CircleAlert size={18} />
+              <span>{friendlyError}</span>
+            </div>
+          );
+        })()}
 
         <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
           <div className="space-y-4">

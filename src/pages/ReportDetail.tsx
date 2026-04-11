@@ -11,7 +11,10 @@ export const ReportDetail = () => {
   const { data: authUser } = useAuth();
   const { mutate: deleteReport, isPending: isDeleting } = useDeleteReport();
 
-  const isOwner = authUser?.id === report?.submitted_by.id;
+  const isAdmin = authUser?.role === 'admin';
+
+  const isAuthenticated = !!authUser;
+  const isOwner = isAuthenticated && (report?.submitted_by?.id === authUser.id);
   const createdAt = report ? new Date(report.created_at).toLocaleString() : '';
 
   if (isLoading) {
@@ -56,6 +59,19 @@ export const ReportDetail = () => {
                 Edit
               </Link>
 
+              <button
+                onClick={() => confirm('Are you sure?') && deleteReport(report.slug)}
+                disabled={isDeleting}
+                className="inline-flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-2 text-xs font-bold uppercase tracking-wide text-destructive hover:bg-destructive/15 transition-colors disabled:opacity-50"
+              >
+                <Trash2 size={14} />
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          )}
+
+          {!isOwner && isAdmin && (
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => confirm('Are you sure?') && deleteReport(report.slug)}
                 disabled={isDeleting}

@@ -28,7 +28,8 @@ export const Navbar = () => {
               {userInitial}
             </div>
             <div className="flex flex-col leading-none">
-              <span className="text-xs font-black text-foreground">{user.name}</span>
+              <span className="text-sm font-black text-foreground">{user?.role === 'admin' ? 'Global Command Center' : user.name}</span>
+
               <span className="text-[10px] mt-1 text-muted-foreground">{user.email}</span>
             </div>
             <UserRound size={14} className="text-muted-foreground" />

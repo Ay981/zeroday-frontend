@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+import { ChevronLeft } from 'lucide-react';
 import type { ReportFormData } from '../types/schemas';
 import { useCreateReport } from '../hooks/useCreateReport';
 import { ReportForm } from '../components/ReportForm';
@@ -11,8 +13,16 @@ export const CreateReport = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground px-4 md:px-8 py-10 md:py-14">
-      <div className="max-w-3xl mx-auto space-y-6">
+    <div className="min-h-screen bg-background text-foreground px-4 md:px-8 py-8 md:py-12">
+      <div className="max-w-4xl mx-auto space-y-5">
+        <Link
+          to="/dashboard"
+          className="inline-flex w-fit items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-bold text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors"
+        >
+          <ChevronLeft size={16} />
+          Back to Dashboard
+        </Link>
+
         <header className="space-y-2">
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-black">Submission</p>
           <div className="flex items-center gap-3">

@@ -1,4 +1,5 @@
-import { Navigate, useParams } from 'react-router-dom';
+import { Navigate, useParams, Link } from 'react-router-dom';
+import { ChevronLeft } from 'lucide-react';
 import { useReport } from '../hooks/useReports';
 import { useAuth } from '../hooks/useAuth';
 import { useUpdateReport } from '../hooks/useUpdateReport';
@@ -14,6 +15,11 @@ export const EditReport = () => {
   
   // 2. Setup the update mutation
   const { mutate, isPending: isUpdating } = useUpdateReport(slug!);
+  
+  if (!(authUser?.id === report.submitted_by.id)) {
+    return <Navigate to={`/dashboard/reports/${report.slug}`} replace />;
+  }
+
 
   if (isFetching || isAuthLoading) {
     return (
@@ -35,15 +41,17 @@ export const EditReport = () => {
     );
   }
 
-  const isOwner = authUser?.id === report.submitted_by.id;
-
-  if (!isOwner) {
-    return <Navigate to={`/dashboard/reports/${report.slug}`} replace />;
-  }
-
   return (
-    <div className="min-h-screen bg-background text-foreground px-4 md:px-8 py-10 md:py-14">
-      <div className="max-w-3xl mx-auto space-y-6">
+    <div className="min-h-screen bg-background text-foreground px-4 md:px-8 py-8 md:py-12">
+      <div className="max-w-4xl mx-auto space-y-5">
+        <Link
+          to="/dashboard"
+          className="inline-flex w-fit items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-bold text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors"
+        >
+          <ChevronLeft size={16} />
+          Back to Dashboard
+        </Link>
+
         <header className="space-y-2">
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-black">Maintenance</p>
           <div className="flex items-center gap-3">

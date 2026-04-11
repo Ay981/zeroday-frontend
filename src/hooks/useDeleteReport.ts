@@ -9,18 +9,25 @@ export const useDeleteReport = () => {
 
   return useMutation({
     mutationFn: async (slug: string) => {
-      await apiClient.delete(`/reports/${slug}`);
+      // 1. Capture the request promise
+      const promise = apiClient.delete(`/reports/${slug}`);
+
+      // 2. Hand it to Sileo IMMEDIATELY
+      sileo.promise(promise, {
+        loading: { title: "Purging Logs...", description: "Removing vulnerability from terminal." },
+        success: { title: "Wiped", description: "Report successfully deleted." },
+        error: { title: "Access Denied", description: "Purge sequence failed." },
+      });
+
+      // 3. Wait for the actual request to finish
+      return await promise;
     },
     onSuccess: () => {
-      // Refresh the feed
+      // 4. Invalidate cache so the list updates
       queryClient.invalidateQueries({ queryKey: ['reports'] });
-         sileo.promise(Promise.resolve(), {
-        loading: { title: "Encrypting...", description: "Securing vulnerability data" },
-        success: { title: "Deleted", description: "Report removed from database" },
-        error: { title: "Breach Failed", description: "Check terminal for errors" },
-      });
-      // Go back to dashboard
-      navigate('/dashboard');
+      
+      // 5. Navigate back to feed after a short delay so they see the success toast
+      setTimeout(() => navigate('/dashboard'), 500);
     },
   });
 };

@@ -4,6 +4,7 @@ export interface User {
   email: string;
   reputation: number; 
   level: number;     
+  role:'researcher' | 'admin';
 }
 
 export interface Report {
