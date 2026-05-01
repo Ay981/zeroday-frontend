@@ -1,8 +1,10 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import type { ReportFormData } from '../types/schemas';
 import { reportSchema } from '../types/schemas';
 import { usePrograms } from '../hooks/usePrograms';
+import { Trash2 } from 'lucide-react';
 
 import type { Report } from '../types/report';
 
@@ -15,6 +17,7 @@ interface Props {
 
 export const ReportForm = ({ initialData, onSubmit, isLoading, buttonText }: Props) => {
   const { data: programs, isLoading: loadingPrograms } = usePrograms();
+  const [removeImage, setRemoveImage] = useState(false);
 
   const { register, handleSubmit, formState: { errors, isSubmitted } } = useForm<ReportFormData>({
     resolver: zodResolver(reportSchema),
@@ -28,8 +31,18 @@ export const ReportForm = ({ initialData, onSubmit, isLoading, buttonText }: Pro
 
   const hasErrors = Object.keys(errors).length > 0;
 
+  const handleFormSubmit = (data: ReportFormData) => {
+    // If removing image, add remove_image flag
+    const submitData = removeImage ? { ...data, remove_image: true } : data;
+    onSubmit(submitData);
+  };
+
+  const handleRemoveImage = () => {
+    setRemoveImage(true);
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 rounded-2xl border border-border bg-card p-5 md:p-7">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5 rounded-2xl border border-border bg-card p-5 md:p-7">
       {isSubmitted && hasErrors && (
         <div className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-2.5 text-sm font-semibold text-destructive">
           Please fix the highlighted fields before submitting.
@@ -68,7 +81,7 @@ export const ReportForm = ({ initialData, onSubmit, isLoading, buttonText }: Pro
           className={`w-full rounded-lg border bg-background px-4 py-3 text-foreground outline-none transition-all duration-200 motion-reduce:transition-none ${errors.program_id ? 'border-destructive/60 bg-destructive/5 focus-visible:ring-destructive/50' : 'border-border hover:border-primary/40'} focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-60`}
         >
           <option value="">{loadingPrograms ? 'Loading programs...' : 'Select a company...'}</option>
-          {programs?.map((program) => (
+          {programs?.map((program: import('../types/report').Program) => (
             <option key={program.id} value={program.id}>
               {program.name} ({program.multiplier}x Multiplier)
             </option>
@@ -86,6 +99,59 @@ export const ReportForm = ({ initialData, onSubmit, isLoading, buttonText }: Pro
         />
         {errors.description && <p className="mt-1 text-xs font-semibold text-destructive">{errors.description.message}</p>}
       </div>
+
+      {/* Show current image if exists and not removing */}
+      {initialData?.evidence_image_url && !removeImage && (
+        <div>
+          <label className="mb-1.5 ml-1 block text-xs font-black uppercase tracking-[0.14em] text-foreground/80">Current Evidence Image</label>
+          <div className="space-y-3">
+            <div className="rounded-lg border border-border overflow-hidden">
+              <img
+                src={initialData.evidence_image_url}
+                alt="Current evidence image"
+                className="w-full h-auto max-h-64 object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  const parent = e.currentTarget.parentElement;
+                  if (parent) {
+                    parent.innerHTML = '<div class="p-8 text-center text-muted-foreground">Image not available</div>';
+                  }
+                }}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleRemoveImage}
+              className="inline-flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs font-bold uppercase tracking-wide text-destructive hover:bg-destructive/15 transition-colors"
+            >
+              <Trash2 size={14} />
+              Remove Image
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Show file input if no image exists or image is being removed */}
+      {(!initialData?.evidence_image_url || removeImage) && (
+        <div>
+          <label className="mb-1.5 ml-1 block text-xs font-black uppercase tracking-[0.14em] text-foreground/80">
+            Evidence Image {initialData?.evidence_image_url && '(New Upload)'}
+          </label>
+          <input
+            type="file"
+            accept="image/jpeg, image/png, image/webp, image/gif"
+            {...register('evidence_image')}
+            className={`w-full rounded-lg border bg-background px-4 py-3 text-foreground outline-none transition-all duration-200 motion-reduce:transition-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-black file:bg-primary/10 file:text-primary hover:file:bg-primary/20 ${errors.evidence_image ? 'border-destructive/60 bg-destructive/5 focus-visible:ring-destructive/50' : 'border-border hover:border-primary/40'} focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background`}
+          />
+          {errors.evidence_image && <p className="mt-1 text-xs font-semibold text-destructive">{errors.evidence_image.message as string}</p>}
+          <p className="mt-1 text-xs text-muted-foreground">Upload a screenshot or proof of concept (JPG, PNG, WebP, GIF)</p>
+          {removeImage && (
+            <p className="mt-1 text-xs text-amber-600 font-semibold">
+              Previous image will be removed. Upload a new image or leave empty to remove permanently.
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="space-y-2 pt-1">
         <button

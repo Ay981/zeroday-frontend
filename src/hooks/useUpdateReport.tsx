@@ -9,9 +9,9 @@ export const useUpdateReport = (slug: string) => {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: async (data: ReportFormData) => {
+    mutationFn: async (data: ReportFormData | FormData) => {
       // Laravel expects a PUT or PATCH request for updates
-      const responsePromise = apiClient.patch(`/reports/${slug}`, data);
+      const responsePromise = apiClient.patch(`/api/v1/reports/${slug}`, data);
       sileo.promise(responsePromise, {
         loading: { title: "Encrypting...", description: "Securing vulnerability data" },
         success: { title: "Report Updated", description: "Changes saved successfully" },

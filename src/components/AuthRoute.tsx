@@ -1,22 +1,29 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 interface Props {
   mode: 'protected' | 'guest';
 }
 
 export const AuthRoute = ({ mode }: Props) => {
-  const token = localStorage.getItem('token');
+  const { data: user, isLoading } = useAuth();
 
-  // Logic 1: Protected Mode (Keep guests out)
-  if (mode === 'protected' && !token) {
-    return <Navigate to="/login" replace />;
+  if (isLoading) return null; // or a spinner
+
+  // Protected: require authenticated user
+  if (mode === 'protected' && !user) return <Navigate to="/login" replace />;
+
+  // If user is authenticated but not verified, force them to /verify
+  const location = useLocation();
+  if (user && user.is_verified === false && location.pathname !== '/verify') {
+    return <Navigate to="/verify" replace />;
   }
 
-  // Logic 2: Guest Mode (Keep hackers out of login once they are in)
-  if (mode === 'guest' && token) {
-    return <Navigate to="/dashboard" replace />;
+  // Guest: redirect authenticated users away from auth pages
+  if (mode === 'guest' && user) {
+    // Redirect verified users to dashboard; unverified users to verify page
+    return <Navigate to={user.is_verified === false ? '/verify' : '/dashboard'} replace />;
   }
 
-  // Otherwise, proceed to the requested page
   return <Outlet />;
 };

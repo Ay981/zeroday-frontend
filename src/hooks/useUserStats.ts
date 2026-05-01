@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../api/client';
+import { useAuth } from './useAuth';
 
 interface UserStats {
   stats: {
@@ -11,11 +12,14 @@ interface UserStats {
 }
 
 export const useUserStats = () => {
+  const { data: user } = useAuth();
+  
   return useQuery<UserStats>({
     queryKey: ['user-stats'],
     queryFn: async () => {
-      const response = await apiClient.get('/user/stats');
+      const response = await apiClient.get('/api/v1/user/stats');
       return response.data;
     },
+    enabled: !!user, // Only run query if user is authenticated
   });
 };

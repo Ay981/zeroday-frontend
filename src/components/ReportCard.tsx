@@ -8,11 +8,7 @@ interface Props {
 }
 
 export const ReportCard = ({ report }: Props) => {
-  const createdAt = new Date(report.created_at).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: '2-digit',
-  });
+  const createdAt = report.created_at;
 
   const severityTone = {
     Low: 'from-secondary to-secondary/40',

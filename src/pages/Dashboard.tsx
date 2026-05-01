@@ -18,13 +18,14 @@ export const Dashboard = () => {
   const page = Number(searchParams.get('page')) || 1;
   const severity = searchParams.get('severity') || '';
   const urlSearch = searchParams.get('search') || '';
+  const aiMode = searchParams.get('ai_mode') === 'true';
 
   // 2. Search Logic
   const [searchTerm, setSearchTerm] = useState(urlSearch);
   const debouncedSearch = useDebounce(searchTerm, 500);
 
   // 3. Data Fetch
-  const { data, isLoading, error, isPlaceholderData } = useReports(page, urlSearch, severity);
+  const { data, isLoading, error, isPlaceholderData } = useReports(page, urlSearch, severity, aiMode);
 
   // 4. URL Update Helper
   const updateParams = (key: string, value: string | number) => {
@@ -33,6 +34,14 @@ export const Dashboard = () => {
     else newParams.delete(key);
     if (key !== 'page') newParams.set('page', '1');
     setSearchParams(newParams);
+  };
+
+  // 5. AI Mode Toggle Helper
+  const toggleAiMode = () => {
+    const params = new URLSearchParams(searchParams);
+    params.set('ai_mode', (!aiMode).toString());
+    params.set('page', '1'); // Reset to page 1
+    setSearchParams(params);
   };
 
   useEffect(() => {
@@ -109,6 +118,8 @@ export const Dashboard = () => {
           onSearchChange={setSearchTerm}
           severity={severity}
           onSeverityChange={(val) => updateParams('severity', val)}
+          aiMode={aiMode}
+          onAiModeToggle={toggleAiMode}
         />
       </div>
 

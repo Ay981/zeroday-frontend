@@ -1,15 +1,20 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import apiClient from '../api/client';
+import api from '../api/client';
 import type { Report } from '../types/report';
 import type { PaginatedResponse } from '../types/Pagination';
 
-export const useReports = (page = 1, search = '', severity = '') => {
+export const useReports = (page = 1, search = '', severity = '', aiMode = false) => {
   return useQuery<PaginatedResponse<Report>>({
-    // CRITICAL: Every unique search/severity combination gets its own cache key
-    queryKey: ['reports', { page, search, severity }], 
+    // CRITICAL: Include aiMode in the queryKey so the cache stays separate
+    queryKey: ['reports', { page, search, severity, aiMode }], 
     queryFn: async () => {
-      const response = await apiClient.get('/reports', {
-        params: { page, search, severity } // Axios handles the ?search=... part
+      const response = await api.get('/api/v1/reports', {
+        params: { 
+          page, 
+          search, 
+          severity, 
+          ai_mode: aiMode // Send the flag to Laravel
+        }
       });
       return response.data;
     },
@@ -20,8 +25,8 @@ export const useReport = (slug: string) => {
   return useQuery<Report>({
     queryKey: ['report', slug],
     queryFn: async () => {
-      const response = await apiClient.get(`/reports/${slug}`);
-      return response.data.data;
+      const response = await api.get(`/api/v1/reports/${slug}`);
+      return response.data.data ?? response.data;
     },
   });
 };

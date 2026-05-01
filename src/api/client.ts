@@ -1,66 +1,56 @@
-import axios from 'axios';
-import { sileo } from 'sileo';
+import axios, { AxiosError } from 'axios';
+import { AxiosHeaders } from 'axios';
+import { queryClient } from '../lib/queryClient';
 
-const apiClient = axios.create({
-  baseURL: 'http://localhost:8000/api/v1', // Adjust if your backend is hosted elsewhere
+const api = axios.create({
+  baseURL: 'https://api.zeroday.aymenabdulkerim.dev',
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
 });
+ 
+const readDecodedXsrfToken = (): string | null => {
+  const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
+  if (!match?.[1]) {
+    return null;
+  }
+  const token = decodeURIComponent(match[1]);
+  return token;
+};
 
-// Request Interceptor (Existing: Attach Token)
-apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+api.interceptors.request.use((config) => {
+  const token = readDecodedXsrfToken();
+  if (token) {
+    const headers = AxiosHeaders.from(config.headers);
+    headers.set('X-XSRF-TOKEN', token);
+    config.headers = headers;
+  }
+  
+  // Remove Content-Type header for FormData to let browser set it automatically
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
+  }
+  
   return config;
 });
 
-// Response Interceptor (New: The Safety Net)
-apiClient.interceptors.response.use(
-  (response) => response, // If request is 2xx, do nothing
+api.interceptors.response.use(
+  (res) => res,
   (error) => {
-    const status = error.response?.status;
-
-    switch (status) {
-      case 401: // Unauthorized (Token expired/invalid)
-        localStorage.removeItem('token');
-        sileo.error({
-          title: 'Session Terminated',
-          description: 'Re-authentication required.',
-        });
-        // Optional: window.location.href = '/login';
-        break;
-
-      case 403: // Forbidden (Policy failed)
-        sileo.error({
-          title: 'Access Denied',
-          description: 'You do not have clearance for this operation.',
-        });
-        break;
-
-      case 422: // Validation Error
-        // We usually handle this inside the component/form
-        break;
-
-      case 500: // Server Crash
-        sileo.error({
-          title: 'Nexus Offline',
-          description: 'The backend server encountered a critical error.',
-        });
-        break;
-      case 429: // Too Many Requests
-  sileo.error({
-    title: "Security Lockout",
-    description: "Too many failed attempts. Try again in 60 seconds."
-  });
-  break;
-
-      default:
-        sileo.error({
-          title: 'Network Error',
-          description: 'Unable to establish uplink with the server.',
-        });
+    // Only logout on actual authentication failures, not all 401/403 errors
+    const err = error as AxiosError;
+    if (err?.response?.status === 401) {
+      const responseData = err?.response?.data as any;
+      const errorMessage = responseData?.message;
+      // Only logout if it's an authentication error, not other 401 errors
+      if (errorMessage === 'Invalid credentials' || errorMessage?.includes('Unauthenticated')) {
+        queryClient.setQueryData(['auth-user'], null);
+      }
     }
-
     return Promise.reject(error);
   }
 );
 
-export default apiClient;
+export default api;

@@ -5,19 +5,22 @@ export interface User {
   reputation: number; 
   level: number;     
   role:'researcher' | 'admin';
+  is_verified?: boolean;
 }
 
 export interface Report {
   id: number;
   slug: string;
   title: string;
-  program_id: number;
   severity: 'Low' | 'Medium' | 'High' | 'Critical';
   description: string;
+  ai_summary: string | null; // AI Summary
+  similarity?: string;    
+  evidence_image_url?: string;    // E.g., "94.5%"
   status: string;
   created_at: string;
-  program?: Program; // The bug now belongs to a program
-  submitted_by: User; // Points to the updated User interface
+  submitted_by: User;
+  program: Program;
 }
 export interface Program {
   id: number;

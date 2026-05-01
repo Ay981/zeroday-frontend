@@ -1,8 +1,8 @@
-import { useUserStats } from '../hooks/useUserStats';
 import { useAuth } from '../hooks/useAuth';
 import { ShieldAlert, Bug, Flame, ArrowUpRight, Fingerprint, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import appLogo from '../assets/image.png';
+import { useUserStats } from '../hooks/useUserStats';
 
 type RecentActivityItem = {
     id: string | number;

@@ -6,6 +6,7 @@ import { CreateReport } from './pages/CreateReport'; // New Page for creating re
 import { ReportDetail } from './pages/ReportDetail'; // New Page for report details
 import { EditReport } from './pages/EditReport';
 import { Register } from './pages/Register'; // New Page for registration
+import { Verify } from './pages/Verify';
 import { Profile } from './pages/Profile';
 
 function App() {
@@ -19,6 +20,9 @@ function App() {
 
       {/* If someone hits the root /, send them to dashboard */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+      {/* Verify (accessible after register even if session isn't fully established) */}
+      <Route path="/verify" element={<Verify />} />
 
       {/* Protected Routes */}
       <Route element={<AuthRoute mode="protected" />}>

@@ -22,5 +22,7 @@ export const reportSchema = z.object({
   }),
   description: z.string().min(20),
   program_id: z.string().min(1, "Please select a target program"), // Add this
+    evidence_image: z.any().optional(),
+  remove_image: z.boolean().optional(),
 });
 export type ReportFormData = z.infer<typeof reportSchema>;

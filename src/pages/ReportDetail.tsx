@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useReport } from '../hooks/useReports';
 import { useAuth } from '../hooks/useAuth';
 import { useDeleteReport } from '../hooks/useDeleteReport';
-import { Trash2, Edit3, ChevronLeft, CalendarDays, CircleDot, UserRound, Building2 } from 'lucide-react';
+import { Trash2, Edit3, ChevronLeft, CalendarDays, CircleDot, UserRound, Building2, Sparkles } from 'lucide-react';
 import { SeverityBadge } from '../components/SeverityBadge';
 
 export const ReportDetail = () => {
@@ -15,7 +15,7 @@ export const ReportDetail = () => {
 
   const isAuthenticated = !!authUser;
   const isOwner = isAuthenticated && (report?.submitted_by?.id === authUser.id);
-  const createdAt = report ? new Date(report.created_at).toLocaleString() : '';
+  const createdAt = report?.created_at;
 
   if (isLoading) {
     return (
@@ -116,10 +116,46 @@ export const ReportDetail = () => {
             </div>
           </header>
 
+
+          {/* --- AI TRIAGE SUMMARY --- */}
+          {report.ai_summary && (
+            <div className="mb-10 p-6 bg-gradient-to-br from-indigo-50 to-blue-50 border border-blue-100 rounded-2xl relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+              <div className="flex items-center gap-2 mb-3 text-blue-700">
+                <Sparkles size={18} className="animate-pulse" />
+                <h3 className="font-black text-sm uppercase tracking-widest">AI Triage Summary</h3>
+              </div>
+              <p className="text-gray-800 font-medium leading-relaxed">
+                {report.ai_summary}
+              </p>
+            </div>
+          )}
+
+          {/* --- ORIGINAL DESCRIPTION --- */}
           <section>
             <h2 className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-black mb-3">Description</h2>
             <p className="text-foreground/90 leading-relaxed whitespace-pre-line">{report.description}</p>
           </section>
+
+          {report.evidence_image_url && (
+            <section>
+              <h2 className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-black mb-3">Evidence Image</h2>
+              <div className="rounded-lg border border-border overflow-hidden">
+                <img
+                  src={report.evidence_image_url}
+                  alt="Evidence for vulnerability report"
+                  className="w-full h-auto object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    const parent = e.currentTarget.parentElement;
+                    if (parent) {
+                      parent.innerHTML = '<div class="p-8 text-center text-muted-foreground">Image not available</div>';
+                    }
+                  }}
+                />
+              </div>
+            </section>
+          )}
         </article>
       </div>
     </div>

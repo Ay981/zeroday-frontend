@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useUpdateReport } from '../hooks/useUpdateReport';
 import { ReportForm } from '../components/ReportForm';
 import appLogo from '../assets/image.png';
+import type { ReportFormData } from '../types/schemas';
 
 export const EditReport = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -16,6 +17,16 @@ export const EditReport = () => {
   // 2. Setup the update mutation
   const { mutate, isPending: isUpdating } = useUpdateReport(slug!);
   
+  if (!report) {
+    return (
+      <div className="min-h-screen bg-background text-foreground px-4 md:px-8 py-10 md:py-14">
+        <div className="max-w-3xl mx-auto rounded-xl border border-border bg-card p-10 text-center font-semibold text-muted-foreground">
+          Report not found.
+        </div>
+      </div>
+    );
+  }
+
   if (!(authUser?.id === report.submitted_by.id)) {
     return <Navigate to={`/dashboard/reports/${report.slug}`} replace />;
   }
@@ -41,6 +52,34 @@ export const EditReport = () => {
     );
   }
 
+  const onSubmit = (data: ReportFormData) => {
+    // If removing image or uploading new file, use FormData
+    if (data.remove_image || (data.evidence_image && data.evidence_image.length > 0)) {
+      const formData = new FormData();
+      
+      // Append standard text fields
+      formData.append('title', data.title);
+      formData.append('severity', data.severity);
+      formData.append('description', data.description);
+      formData.append('program_id', data.program_id);
+
+      // Append the file if selected
+      if (data.evidence_image && data.evidence_image.length > 0) {
+        formData.append('evidence_image', data.evidence_image[0]);
+      }
+
+      // Add remove_image flag if set
+      if (data.remove_image) {
+        formData.append('remove_image', 'true');
+      }
+
+      mutate(formData);
+    } else {
+      // Regular JSON update for text fields only
+      mutate(data);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground px-4 md:px-8 py-8 md:py-12">
       <div className="max-w-4xl mx-auto space-y-5">
@@ -65,7 +104,7 @@ export const EditReport = () => {
 
         <ReportForm
           initialData={report}
-          onSubmit={(data) => mutate(data)}
+          onSubmit={onSubmit}
           isLoading={isUpdating}
           buttonText="Update Report"
         />

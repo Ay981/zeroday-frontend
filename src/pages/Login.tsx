@@ -1,24 +1,30 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../api/auth';
+import { Link } from 'react-router-dom';
+import { useLogin } from '../hooks/useLogin';
 import { sileo } from "sileo";
-import { Key, CircleAlert } from 'lucide-react';
+import { Key, CircleAlert, EyeOffIcon } from 'lucide-react';
 import appLogo from '../assets/image.png';
+import { EyeIcon } from 'lucide-react';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const login = useLogin();
+  const [showPassword, setShowPassword] = useState(false);
+  
+  function togglePasswordVisibility() {
+    setShowPassword((prev) => !prev);
+  }
+
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Wrap the login call in a Sileo Promise for professional UX
-    const loginPromise = login({ email, password });
+    const promise = login.mutateAsync({ email, password });
 
-    sileo.promise(loginPromise, {
+    sileo.promise(promise, {
       loading: { title: "Decrypting Credentials..." },
       success: { title: "Access Granted" },
       error: (err: unknown) => ({
@@ -34,9 +40,7 @@ export const Login = () => {
     });
 
     try {
-      await loginPromise;
-      // Slight delay (800ms) so user can see the "Success" toast before redirect
-      setTimeout(() => navigate('/dashboard'), 800);
+      await promise;
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Authentication failed');
     }
@@ -57,8 +61,8 @@ export const Login = () => {
 
         {error && (() => {
           const friendlyError =
-            /invalid|unauthorized|401|credential|password|email/i.test(error)
-              ? "That email or password doesn’t look right. Please try again."
+            /invalid|unauthorized|401|403|credential|password|email/i.test(error)
+              ? "That email or password doesn't look right. Please try again."
               : /network|fetch|timeout|offline|internet/i.test(error)
               ? "We couldn’t reach the server. Please check your connection and try again."
               : /too many|rate limit|429/i.test(error)
@@ -87,16 +91,26 @@ export const Login = () => {
               />
             </div>
 
-            <div>
-              <label className="mb-1 ml-1 block text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Terminal Password</label>
-              <input
-                type="password"
-                required
-                className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground outline-none transition-all duration-200 motion-reduce:transition-none hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+
+            <div className="flex flex-col">
+              <label className="mb-1 ml-1 block text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground self-start">Terminal Password</label>
+              <div className="relative w-full">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  className="w-full rounded-lg border border-border bg-background px-4 py-3 pr-10 text-foreground outline-none transition-all duration-200 motion-reduce:transition-none hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground/80 focus:outline-none flex items-center justify-center"
+                >
+                  {showPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
+                </button>
+              </div>
             </div>
           </div>
 

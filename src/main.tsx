@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { queryClient } from './lib/queryClient'
 import App from './App.tsx'
 import './index.css'
 import { BrowserRouter } from 'react-router-dom';
@@ -8,16 +9,7 @@ import { Toaster } from "sileo";
 import "sileo/styles.css";
 
 
-// 1. Initialize the Engine
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false, 
-      staleTime: 5 * 60 * 1000, 
-      gcTime: 10 * 60 * 1000,
-    },
-  },
-});
+// 1. Initialize the Engine (shared instance in src/lib/queryClient)
 
 
 

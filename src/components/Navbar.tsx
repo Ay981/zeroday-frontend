@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
-import { logout } from '../api/auth';
 import { useAuth } from '../hooks/useAuth';
+import { useLogout } from '../hooks/useLogout';
 import { LogOut, UserRound } from 'lucide-react';
 import appLogo from '../assets/image.png';
 
 export const Navbar = () => {
   const { data: user } = useAuth();
+  const logout = useLogout();
   const userInitial = user?.name?.charAt(0).toUpperCase() ?? 'R';
 
   return (
@@ -37,7 +38,7 @@ export const Navbar = () => {
         )}
 
         <button
-          onClick={logout}
+          onClick={() => logout.mutate()}
           className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-xs md:text-sm font-bold text-muted-foreground hover:bg-card hover:text-destructive transition-all duration-200 motion-reduce:transition-none active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           <LogOut size={15} />

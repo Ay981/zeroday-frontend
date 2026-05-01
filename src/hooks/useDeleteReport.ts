@@ -10,7 +10,7 @@ export const useDeleteReport = () => {
   return useMutation({
     mutationFn: async (slug: string) => {
       // 1. Capture the request promise
-      const promise = apiClient.delete(`/reports/${slug}`);
+      const promise = apiClient.delete(`/api/v1/reports/${slug}`);
 
       // 2. Hand it to Sileo IMMEDIATELY
       sileo.promise(promise, {

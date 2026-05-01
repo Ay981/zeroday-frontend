@@ -9,7 +9,22 @@ export const CreateReport = () => {
   const { mutate, isPending } = useCreateReport();
 
   const onSubmit = (data: ReportFormData) => {
-    mutate(data);
+    // Create FormData for file upload
+    const formData = new FormData();
+    
+    // Append standard text fields
+    formData.append('title', data.title);
+    formData.append('severity', data.severity);
+    formData.append('description', data.description);
+    formData.append('program_id', data.program_id);
+
+    // Append the file if selected
+    if (data.evidence_image && data.evidence_image.length > 0) {
+      formData.append('evidence_image', data.evidence_image[0]);
+    }
+
+    // Send FormData to the mutation
+    mutate(formData);
   };
 
   return (

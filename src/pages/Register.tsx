@@ -5,10 +5,12 @@ import { Link } from 'react-router-dom';
 import { registerSchema } from '../types/schemas';
 import type { RegisterFormData } from '../types/schemas';
 import  { registerUser } from '../api/auth';
+import { useNavigate } from 'react-router-dom';
 import { UserPlus, AlertCircle } from 'lucide-react';
 import appLogo from '../assets/image.png';
 
 export const Register = () => {
+  const navigate = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -26,8 +28,9 @@ export const Register = () => {
 
     try {
       await registerUser(data);
-      // Hard refresh to reset React Query and detect the new token
-      window.location.href = '/dashboard';
+      // Store email for verification page and navigate
+      localStorage.setItem('pending_registration_email', data.email);
+      navigate(`/verify?email=${encodeURIComponent(data.email)}`);
     } catch (err: unknown) {
       // Catch Laravel's "Email already taken" or other server errors
       setServerError((err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to create account.');
