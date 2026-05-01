@@ -144,6 +144,7 @@ export const ReportDetail = () => {
                 <img
                   src={report.evidence_image_url}
                   alt="Evidence for vulnerability report"
+                  crossOrigin="anonymous" // <--- ADD THIS LINE
                   className="w-full h-auto object-cover"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
