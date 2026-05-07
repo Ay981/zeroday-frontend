@@ -1,7 +1,7 @@
 import { useAuth } from '../hooks/useAuth';
 import { ShieldAlert, Bug, Flame, ArrowUpRight, Fingerprint, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import appLogo from '../assets/image.png';
+import appLogo from '../assets/logo-small.webp';
 import { useUserStats } from '../hooks/useUserStats';
 
 type RecentActivityItem = {

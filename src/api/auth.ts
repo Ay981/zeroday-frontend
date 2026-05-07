@@ -1,5 +1,5 @@
+import axios from 'axios';
 import api from './client';
-import type { AxiosError } from 'axios';
 import { queryClient } from '../lib/queryClient';
 import type { User } from '../types/report';
 
@@ -8,17 +8,73 @@ type Credentials = {
   password: string;
 };
 
-const isCsrfExpiredError = (error: unknown) => {
-  const err = error as AxiosError;
-  return err?.response?.status === 419;
+type AuthResponse = {
+  user?: User | null;
+  requires_verification?: boolean;
+  requiresVerification?: boolean;
+};
+
+type ApiUserResponse = User | { data?: User | null } | null;
+
+const AUTH_USER_QUERY_KEY = ['auth-user'] as const;
+const REPORTS_QUERY_KEY = ['reports'] as const;
+const REPORT_QUERY_KEY = ['report'] as const;
+const CONNECTION_ERROR_CODES = new Set(['ECONNREFUSED', 'ERR_NETWORK']);
+
+const getResponseMessage = (data: unknown): string | undefined => {
+  return typeof data === 'object' && data !== null && 'message' in data
+    ? String(data.message)
+    : undefined;
+};
+
+const isUnauthenticatedError = (error: unknown): boolean => {
+  if (!axios.isAxiosError(error) || error.response?.status !== 401) {
+    return false;
+  }
+
+  const message = getResponseMessage(error.response.data);
+  return message === 'Invalid credentials' || message?.includes('Unauthenticated') === true;
+};
+
+const isCsrfExpiredError = (error: unknown): boolean => {
+  return axios.isAxiosError(error) && error.response?.status === 419;
+};
+
+const isUserEnvelope = (payload: ApiUserResponse): payload is { data?: User | null } => {
+  return typeof payload === 'object' && payload !== null && 'data' in payload;
+};
+
+const extractUser = (payload: ApiUserResponse): User | null => {
+  if (!payload) {
+    return null;
+  }
+
+  return isUserEnvelope(payload) ? payload.data ?? null : payload;
+};
+
+const cacheAuthUser = (user: User | null) => {
+  queryClient.setQueryData(AUTH_USER_QUERY_KEY, user);
+};
+
+const refreshReportQueries = () => {
+  queryClient.invalidateQueries({ queryKey: REPORTS_QUERY_KEY });
+};
+
+const getCurrentUserEmail = (): string | null => {
+  const user = queryClient.getQueryData<User | null>(AUTH_USER_QUERY_KEY);
+  return user?.email ?? null;
 };
 
 const withCsrfRetry = async <T>(action: () => Promise<T>): Promise<T> => {
   await ensureCsrf();
+
   try {
     return await action();
   } catch (error) {
-    if (!isCsrfExpiredError(error)) throw error;
+    if (!isCsrfExpiredError(error)) {
+      throw error;
+    }
+
     await ensureCsrf();
     return action();
   }
@@ -28,104 +84,92 @@ export const ensureCsrf = async () => {
   try {
     await api.get('/sanctum/csrf-cookie');
   } catch (error) {
-    const err = error as AxiosError;
-    // For network errors, provide a clear error message
-    if (err.code === 'ECONNREFUSED' || err.code === 'ERR_NETWORK') {
-      throw new Error('Unable to connect to the server. Please check your internet connection and ensure the backend server is running.');
+    if (axios.isAxiosError(error) && CONNECTION_ERROR_CODES.has(error.code ?? '')) {
+      throw new Error(
+        'Unable to connect to the server. Please check your internet connection and ensure the backend server is running.'
+      );
     }
+
     throw error;
   }
 };
 
 export const getCurrentUser = async (): Promise<User | null> => {
   try {
-    const resp = await api.get('/api/v1/user');
-    const user = (resp.data?.data ?? resp.data ?? null) as User | null;
-    queryClient.setQueryData(['auth-user'], user);
+    const { data } = await api.get<ApiUserResponse>('/api/v1/user');
+    const user = extractUser(data);
+    cacheAuthUser(user);
     return user;
   } catch (error) {
-    const err = error as AxiosError;
-    console.debug('[auth] getCurrentUser error:', err?.response?.status, err?.response?.data);
-    // Only clear auth state on actual authentication failures
-    if (err?.response?.status === 401) {
-      const responseData = err?.response?.data as any;
-      const errorMessage = responseData?.message;
-      if (errorMessage === 'Invalid credentials' || errorMessage?.includes('Unauthenticated')) {
-        queryClient.setQueryData(['auth-user'], null);
-        return null;
-      }
+    if (isUnauthenticatedError(error)) {
+      cacheAuthUser(null);
     }
-    // Don't clear auth state for other errors (network, 500, etc.)
+
     return null;
   }
 };
 
 export const loginRequest = async (credentials: Credentials) => {
-  const resp = await withCsrfRetry(() => api.post('/api/v1/login', credentials));
+  const { data } = await withCsrfRetry(() => api.post<AuthResponse>('/api/v1/login', credentials));
 
-  const userFromLogin = (resp.data?.user ?? null) as User | null;
-  if (userFromLogin) {
-    queryClient.setQueryData(['auth-user'], userFromLogin);
+  if (data.user) {
+    cacheAuthUser(data.user);
   } else {
     await getCurrentUser();
   }
 
-  queryClient.invalidateQueries({ queryKey: ['reports'] });
-  return resp.data;
+  refreshReportQueries();
+  return data;
 };
 
 export const logoutRequest = async () => {
   await withCsrfRetry(() => api.post('/api/v1/logout'));
 
-  queryClient.setQueryData(['auth-user'], null);
-  queryClient.removeQueries({ queryKey: ['reports'] });
-  queryClient.removeQueries({ queryKey: ['report'] });
+  cacheAuthUser(null);
+  queryClient.removeQueries({ queryKey: REPORTS_QUERY_KEY });
+  queryClient.removeQueries({ queryKey: REPORT_QUERY_KEY });
 };
 
 export const registerUser = async (payload: unknown) => {
-  const resp = await withCsrfRetry(() => api.post('/api/v1/register', payload));
+  const { data } = await withCsrfRetry(() => api.post<AuthResponse>('/api/v1/register', payload));
 
-  const userFromRegister = (resp.data?.user ?? null) as User | null;
-  if (userFromRegister) {
-    queryClient.setQueryData(['auth-user'], userFromRegister);
+  if (data.user) {
+    cacheAuthUser(data.user);
   }
 
-  // Do NOT call getCurrentUser automatically; some backends do not
-  // immediately persist sessions after register. Let the caller decide
-  // whether to refresh auth. Always return the server response so the UI
-  // can navigate to /verify regardless of auth state.
-  queryClient.invalidateQueries({ queryKey: ['reports'] });
-  return resp.data;
+  refreshReportQueries();
+  return data;
 };
-
-// Helper to get the current user's email from the query cache
-function getCurrentUserEmail(): string | null {
-  const user = queryClient.getQueryData(['auth-user']) as User | null;
-  return user?.email ?? null;
-}
 
 export const sendOtp = async (email?: string) => {
   const userEmail = email || getCurrentUserEmail();
-  if (!userEmail) throw new Error('No email found for OTP send');
-  const resp = await withCsrfRetry(() => api.post('/api/v1/otp/send', { email: userEmail }));
-  return resp.data;
+  if (!userEmail) {
+    throw new Error('No email found for OTP send');
+  }
+
+  const { data } = await withCsrfRetry(() => api.post('/api/v1/otp/send', { email: userEmail }));
+  return data;
 };
 
 export const verifyOtp = async (payload: { otp: string; email?: string }) => {
-  // Always include email in the payload
   const userEmail = payload.email || getCurrentUserEmail();
-  if (!userEmail) throw new Error('No email found for OTP verification');
-  const fullPayload = { otp: payload.otp, email: userEmail };
+  if (!userEmail) {
+    throw new Error('No email found for OTP verification');
+  }
 
-  const resp = await withCsrfRetry(() => api.post('/api/v1/register/verify', fullPayload));
-  const userFromVerify = (resp.data?.user ?? null) as User | null;
-  if (userFromVerify) {
-    queryClient.setQueryData(['auth-user'], userFromVerify);
+  const { data } = await withCsrfRetry(() =>
+    api.post<AuthResponse>('/api/v1/register/verify', {
+      otp: payload.otp,
+      email: userEmail,
+    })
+  );
+
+  if (data.user) {
+    cacheAuthUser(data.user);
   } else {
     await getCurrentUser();
   }
 
-  queryClient.invalidateQueries({ queryKey: ['reports'] });
-
-  return resp.data;
+  refreshReportQueries();
+  return data;
 };

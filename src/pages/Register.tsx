@@ -7,7 +7,7 @@ import type { RegisterFormData } from '../types/schemas';
 import  { registerUser } from '../api/auth';
 import { useNavigate } from 'react-router-dom';
 import { UserPlus, AlertCircle } from 'lucide-react';
-import appLogo from '../assets/image.png';
+import appLogo from '../assets/logo-small.webp';
 
 export const Register = () => {
   const navigate = useNavigate();

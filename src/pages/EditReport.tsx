@@ -4,7 +4,7 @@ import { useReport } from '../hooks/useReports';
 import { useAuth } from '../hooks/useAuth';
 import { useUpdateReport } from '../hooks/useUpdateReport';
 import { ReportForm } from '../components/ReportForm';
-import appLogo from '../assets/image.png';
+import appLogo from '../assets/logo-small.webp';
 import type { ReportFormData } from '../types/schemas';
 
 export const EditReport = () => {

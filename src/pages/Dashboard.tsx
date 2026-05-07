@@ -9,7 +9,7 @@ import { Navbar } from '../components/Navbar';
 import { Link } from 'react-router-dom'; 
 import { ReportSkeleton } from '../components/Skeleton/ReportSkeleton';
 import { AlertTriangle, Bug, ShieldCheck } from 'lucide-react';
-import appLogo from '../assets/image.png';
+import appLogo from '../assets/logo-small.webp';
 
 export const Dashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();

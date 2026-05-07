@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useLogin } from '../hooks/useLogin';
 import { sileo } from "sileo";
 import { Key, CircleAlert, EyeOffIcon } from 'lucide-react';
-import appLogo from '../assets/image.png';
+import appLogo from '../assets/logo-small.webp';
 import { EyeIcon } from 'lucide-react';
 
 export const Login = () => {

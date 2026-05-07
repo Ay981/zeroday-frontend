@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useLogout } from '../hooks/useLogout';
 import { LogOut, UserRound } from 'lucide-react';
-import appLogo from '../assets/image.png';
+import appLogo from '../assets/logo-small.webp';
 
 export const Navbar = () => {
   const { data: user } = useAuth();

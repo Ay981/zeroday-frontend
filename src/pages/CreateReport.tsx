@@ -3,7 +3,7 @@ import { ChevronLeft } from 'lucide-react';
 import type { ReportFormData } from '../types/schemas';
 import { useCreateReport } from '../hooks/useCreateReport';
 import { ReportForm } from '../components/ReportForm';
-import appLogo from '../assets/image.png';
+import appLogo from '../assets/logo-small.webp';
 
 export const CreateReport = () => {
   const { mutate, isPending } = useCreateReport();
